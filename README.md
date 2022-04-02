@@ -17,3 +17,7 @@ My questions about web development after completeing this game is, how complex o
 
 If you had a few more hours to work on this project, what would you spend them doing (for example: refactoring certain functions, adding additional features, etc). Be specific. (recommended 100 - 300 words)
 I would spend more time making the game look good and adding sound effects because this will add a woah factor to my game. I wasn't able to implement sound purely because this was my first time ever even making a website, so just getting this far with a little amount of time is a big achievement for me. 
+
+
+#Link to my interview video
+https://drive.google.com/file/d/19ero9K5if-WIV5filfhWkb2gWd4eRrXC/view?usp=sharing
