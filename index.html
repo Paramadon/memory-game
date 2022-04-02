@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+ 
+
+    <title>The Game of Memory</title>
+
+
+    <script >
+
+const cluePauseTime = 333; 
+const nextClueWaitTime = 1000; 
+let isGamePlaying = false;
+let wrongGuess = false;
+let counterGuess = null;
+let holdtime = null; 
+var leftovertime = null; 
+let patternArray = [];
+let currentProgress = null;
+let isMusicPlaying = false;
+let mistakesMade = null;
+
+
+
+function buttonLight(button) {
+  document.getElementById("button" + button).classList.add("yo");
+}
+function wipeButton(button) {
+  document.getElementById("button" + button).classList.remove("yo");
+}
+
+function oneClue(button) {
+  if (isGamePlaying) {
+    buttonLight(button);
+    sound(button, holdtime);
+    setTimeout(wipeButton, holdtime, button);
+  }
+}
+
+function cluesPath() {
+  counterGuess = 0;
+
+
+  let periodDelay = nextClueWaitTime; //set periodDelay to initial wait time
+
+  for (let i = 0; i <= currentProgress; i++) {
+    // for each clue that is revealed so far
+    holdtime -= 25;
+    setTimeout(oneClue, periodDelay, patternArray[i]); // set a timeout to play that clue
+    periodDelay += holdtime;
+    periodDelay += cluePauseTime;
+  }
+
+}
+
+//can't get it to work
+function sound(button) {
+  let audio = new Audio(document.getElementById("button" + button + "_audio").src);
+  audio.play();
+  isMusicPlaying = true;
+}
+
+function stop_Sound(button) {
+  let audio = new Audio(document.getElementById("button" + button + "_audio").src);
+  audio.pause();
+  isMusicPlaying = false;
+}
+function game_start() {
+  //initialize game variables
+  holdtime = 999;
+  currentProgress = 0;
+  mistakesMade = 0;
+  isGamePlaying = true;
+  fillpatternArrayArray();
+  document.getElementById("guesses").innerHTML = mistakesMade;
+
+  // swap the Start and Stop buttons
+  document.getElementById("startButton").classList.add("hidden");
+  document.getElementById("stopButton").classList.remove("hidden");
+  cluesPath();
+}
+
+function stopGame() {
+  //set game variables to end game state
+  isGamePlaying = false;
+  patternArray = [];
+  document.getElementById("guesses").innerHTML = 0;
+  document.getElementById("countdown").innerHTML = 15;
+  // swap the Start and Stop buttons
+  document.getElementById("startButton").classList.remove("hidden");
+  document.getElementById("stopButton").classList.add("hidden");
+}
+
+function loseGame() {
+  stopGame();
+  let audio = new Audio(document.getElementById("error_audio").src);
+  audio.play();
+  alert("Game Over. You lost.");
+}
+
+function winGame() {
+  stopGame();
+  alert("Game Over. You won, traveler!");
+}
+
+function guess(button) {
+  //console.log("user guessed: " + button);
+  if (!isGamePlaying) {
+    return;
+  }
+  // add game logic here
+  if (button === patternArray[counterGuess]) {
+    if (counterGuess < currentProgress) {
+      counterGuess++;
+    } else {
+      if (counterGuess < patternArray.length - 1) {
+        currentProgress++;
+        cluesPath();
+      } else {
+        winGame();
+      }
+    }
+  } else {
+    if (mistakesMade < 2) {
+      ++mistakesMade;
+      document.getElementById("guesses").innerHTML = mistakesMade;
+
+      document.querySelector("body").classList.add("game-over");
+      setTimeout(function() {
+        document.querySelector("body").classList.remove("game-over"), 3000;
+        let audio = new Audio(document.getElementById("error_audio").src);
+        audio.play();
+      });
+
+      if (counterGuess < patternArray.length - 1) {
+        cluesPath();
+      }
+    } else {
+      loseGame();
+    }
+  }
+}
+
+// from Mozilla Developer Network on Random Numbers
+function fillpatternArrayArray() {
+  for (let i = 0; i < 8; i++) {
+    patternArray.push(Math.floor(Math.random() * (4 - 1 + 1) + 1));
+  }
+}
+    </script>
+  </head>
+  <body>
+    <h1 id="memoryGameTitle">The Game of Memory</h1>
+
+  
+
+    <div id="beginButtonArea">
+      <div id="countdown">15</div>
+      <button id="startButton" onclick="game_start()">Start</button>
+      <button id="stopButton" class="hidden" onclick="stopGame()">Stop</button>
+      <div id="guesses">0</div>
+    </div>
+
+    <div class="container">
+      <div id="gameBoard">
+    
+        <audio
+          crossorigin="anonymous"
+          id="button3_audio"
+        ></audio>
+        <button
+          id="button3"
+          class="button"
+          onclick="guess(3)"
+          onmousedown="sound(3)"
+          onmouseup="stop_Sound(3)"
+        ></button>
+
+        <audio
+          crossorigin="anonymous"
+          id="button1_audio"
+        ></audio>
+        <button
+          id="button1"
+          class="button"
+          onclick="guess(1)"
+          onmousedown="sound(1)"
+          onmouseup="stop_Sound(1)"
+        ></button>
+
+        <audio
+          crossorigin="anonymous"
+          id="button2_audio"
+        ></audio>
+        <button
+          id="button2"
+          class="button"
+          onclick="guess(2)"
+          onmousedown="sound(2)"
+          onmouseup="stop_Sound(2)"
+        ></button>
+
+        <audio
+          crossorigin="anonymous"
+          id="button4_audio"
+        ></audio>
+        <button
+          id="button4"
+          class="button"
+          onclick="guess(4)"
+          onmousedown="sound(4)"
+          onmouseup="stop_Sound(4)"
+        ></button>
+      </div>
+    </div>
+    <audio
+      crossorigin="anonymous"
+      id="error_audio"
+    ></audio>
+  </body>
+  <style>
+      
+body {
+    font-family: helvetica, arial, sans-serif;
+    margin: 2em;
+ 
+    color: rgb(94, 67, 67);
+  }
+  
+  h1 {
+    font-style: italic;
+    color: #3399CC;
+    font-family: verdana, arial, sans-serif;
+  }
+  
+  /* Defined ID's */
+  
+  #button1 {
+    background: lightblue;
+    position: absolute;
+    top: 8%;
+    right: 13%;
+    padding: 5px;
+    width: 37%;
+    height: 200px;
+    border-radius: 10%;
+    border: none;
+    outline: none;
+  }
+  
+  #button2 {
+    background: lightgreen;
+    position: absolute;
+    bottom: 8%;
+    left: 13%;
+    padding: 5px;
+    width: 37%;
+    height: 200px;
+    border-radius: 10%;
+    border: none;
+    outline: none;
+  }
+  
+  #button3 {
+    position: absolute;
+    background-color: pink;
+    top: 8%;
+    left: 13%;
+    padding: 5px;
+    width: 37%;
+    height: 200px;
+    border-radius: 10%;
+    border: none;
+    outline: none;
+  }
+  
+  #button4 {
+    background: lightYellow;
+    position: absolute;
+    bottom: 8%;
+    right: 13%;
+    padding: 5px;
+    width: 37%;
+    height: 200px;
+    border-radius: 10%;
+    border: none;
+    outline: none;
+  }
+
+  
+  #memoryGameTitle {
+    letter-spacing: 5px;
+    color: black;
+    text-shadow: 2px 2px black;
+    font-size: 4em;
+    text-align: center;
+  }
+  
+
+  #startButton {
+    font-family: "Architects Daughter", cursive;
+    background-color: black;
+    color: whitesmoke;
+    border-radius: 20%;
+    cursor: pointer;
+    font-size: 30px;
+    width: 100px;
+    height: 50px;
+    font-variant-caps: small-caps;
+    border: none;
+    text-align: center;
+    margin: 10%;
+  }
+  
+  #stopButton {
+    font-family: "Architects Daughter", cursive;
+    background-color: whitesmoke;
+    color: black;
+    border-radius: 20%;
+    border: none;
+    cursor: pointer;
+    font-size: 30px;
+    width: 100px;
+    height: 50px;
+    font-variant-caps: small-caps;
+    text-align: center;
+    margin: 10%;
+  }
+  
+  #beginButtonArea {
+    width: 80%;
+    margin: auto;
+    text-align: center;
+  }
+  
+
+  
+
+  
+  #guesses {
+    color: white;
+    font-family: "Orbitron", sans-serif;
+    display: inline-block;
+    position: relative;
+    margin-left: 20%;
+    font-size: 4em;
+    width: 10%;
+    text-shadow: 2px 2px black;
+  }
+  /* Defined Classes */
+  
+  .game-over {
+    opacity: 0;
+  }
+  
+  .hidden {
+    display: none;
+  }
+  
+  .container {
+    position: relative;
+    display: block;
+    margin: auto;
+    width: 50%;
+    height: 600px;
+    background: none;
+  }
+  
+  /* Compound Selectors */
+  
+  #button1:active,
+  #button1.yo {
+    background: blue;
+    background-repeat: no-repeat;
+    background-position: center;
+  }
+  
+  #button2:active,
+  #button2.yo {
+    background: green;
+    background-repeat: no-repeat;
+    background-position: center;
+  }
+  
+  #button3:active,
+  #button3.yo {
+    background: red;
+    background-repeat: no-repeat;
+    background-position: center;
+  }
+  
+  #button4:active,
+  #button4.yo {
+    background: yellow;
+    background-repeat: no-repeat;
+    background-position: center;
+  }
+  
+  #button5:active,
+  #button5.yo {
+    background: gray;
+    background-repeat: no-repeat;
+    background-position: center;
+  }
+  
+  #gameButtonArea > button {
+    width: 200px;
+    height: 200px;
+    margin: 2px;
+  }
+  
+  #startButton:hover {
+    background-color: green;
+    color: white;
+  }
+  
+  #stopButton:hover {
+    background-color: red;
+    color: white;
+  }
+  </style>
+</html>
